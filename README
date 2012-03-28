@@ -1,0 +1,82 @@
+Echipa: Flip4IT 321CA
+	
+	Membrii:
+		-Voiculescu Rafaela
+		-Nita Catalina
+		-Stefan-Dobrin Cosmin
+		-Rizea Daniel-Octavia
+		
+	Etapa a 4-a
+	
+	
+	Algoritmul:
+	
+		Enginul are implenentat NegaMax (inca de la etapa a 3-a)
+		Inbunatatiri aduse algoritmului NegaMax:
+		
+			1.)Iterative Deepening:
+			Iterative deepening este folosit pentru time management.In functie de stadiul unui joc (tabla de joc), enginul poate in acelasi numar de secunde sa ajunga la nivele diferite (cand sunt prea putine piese pe tabla, se poate ajunge la nivele superioare, branching factorul fiind mic). Insa trebuie pastratat si un control al timpului (pentru a nu sta prea mult pe un nivel), astfel o mutare sa se poata face in aproximativ 6,7,8 secunde, in functie da cat timp are ramas.Din iterative deepening se apeleaza functia ce contine negamax cu alfa beta prunning cu un anumit nivel.Daca se termina generareea se incrementeaza nivelul si se apeleaza din nou functia de negamax.In apelul fuctiei de negamax se verifica daca nivelurile pana acolo au fost generate, astfel nu se genereaza din nou nivelele, ci se genereaza doar la ultimul nivel, folosindu-se astfel de nivelele generate anterior. 
+			
+			2.)Alfa-Beta prunning avantaje: (algoritmul nu mai pierde timp cercetand solutii care sunt mai proaste decat cea curenta)
+				astfel apare un beta cut-off (nu se mai genereaza anumite nivele si posibilitatile de generare a cat mai multe nivele in cat mai putin timp cresc)
+				Puterea Alfa-Beta este sporita si de euristica de ordonare a mutarilor descrescator in functie de scor (cele mai bune mutari sunt evaluate primele).Aceasta ordonare presupune existenta unei functii de evaloare.De remarcat ca nu se poate folosi aceeasi functie de evaloare ca si in mod normal pentru o tabla de sah, intradevar am avea mai multe cut-off-uri insa timpul de evaloare a fiecarei mutari si ordanare a a acesteia ar creste considerabil. Astfel se foloseste functia evaluateQuick care pune pe prima pozitie cele mai bune mutari,(ex: daca enginul poate lua un pion sau regina oponentului, prima mutare va fi cea in care ia regina si a doua cea in care ia pionul, restul fiind mutari care nu produc atac).evaluateQuick se uita in principal la raw material (existenta sau lipsa unor piese de pe tabla de joc).
+			
+			3.)quesence Search
+			Aceasta functie este similara cu negamax-ul cu alfa beta prunning
+			Rolul ei este sa duca "orizontul" enginului pana intr-un loc de echilibru, si pe baza acestor date sa se ia o decizie buna, ce ulterior sa nu se dovedeasca a fi proasta.
+			
+			4.)S-a implementat si NegaScout insa datorita unor probleme de setare "window" a fost abandonata aceasta abordare (implementarea principiului facea prunning la mutari bune), probabil este un bug ce va fi rezolvat in viitorul apropiat.
+			
+			Functia de evaluare principala:
+				  
+1) tipuri piese 
+
+P = 100
+N = 320
+B = 330
+R = 500
+Q = 900
+K = 20000
+
+2) pozitii initiale 
+	-valori desemnate pentru fiecare tip de piesa in functie de pozitia ei pe tabla
+3)ROOK:
+
+    * trapped R => -75
+    * free_line_4_R => +10
+    * free_col_4_R => +10
+    * Rooks on same lin/col +5
+    * general mobility (not free lin/col) => +2/square
+
+4)BISHOP:
+
+    * mobility => +2/square
+    * blocked B => -150
+    * B pair => +40
+
+5)KNIGHT:
+
+    * mobility => +2/sqare
+    * K pair =>+10
+
+6)QUEEN
+
+    * mobility => +2/square
+    * daca Q e atacata => -40 	
+
+7)PAWN:
+
+    * P izolat (neaparat de nimeni) => -15
+    * P blocat (nu poate inainta) => -40
+    * P dublat => -20
+    * (pion pe partea regelui): 1 KS_P departe de poz init => -10 ; 2 KS_P departe de poz init => -20 ; 3 KS_P departe de poz init => -30; 3 KS_P luati=>-45
+
+8)KING:
+
+    * KingSide_CastlingRights_LOST => -25
+    * QueenSide_CastlingRights_LOST => -20
+    * Both_CastlingRights_LOST => -35
+    * NotDone_Castling => -40
+    * K poate fi atacat din 8 directii: daca Directii_Descoperite>=4 => -30			
+		
+			
